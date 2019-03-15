@@ -1,0 +1,18 @@
+#!/bin/bash
+
+
+i="0"
+
+while [ $i -lt 20 ] #20 amostras
+do
+
+	t1=$(date +%s%3N) #display time in ubuntu (ms)
+#	docker-compose --compatibility up
+	cd fw_stateful_img && docker-compose --compatibility up
+	echo "Reading: "
+	read t2
+	bt=$((t2 - t1))
+	cd ..
+	echo "Boot time" $[$i+1] "=" $bt "ms" >> boots.txt
+	i=$[$i+1]
+done

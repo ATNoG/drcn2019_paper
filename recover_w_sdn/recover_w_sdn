@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo "tap0 port number?"
+read tap0
+echo "tap1 port number?"
+read tap1
+
+ping 10.0.0.2 -i 0.1 -c 1
+
+cd
+tout=0.1
+while true; do
+#	t1=$(date +%s%3N) 
+        sudo timeout $tout ping 10.0.0.2 -i 0.1 -c 1 > /dev/null 2>&1; 
+        if [ "$?" = 0 ] 
+        then 
+                echo "running"
+        else
+                echo "failure"
+                echo "Changing flows"
+		break
+        fi
+done
+
+curl -X POST -d '{"vnf": "firewall","priority": 1,"ip0": "10.0.0.2/24","ip1": "192.168.0.3/24","mac0": "c0:01:0a:00:00:2a","interface0": '"$tap0"',"mac1": "c0:01:0a:00:00:3a","interface1": '"$tap1"',}' http://localhost:8080/recover/trigger
+sleep 1

@@ -1,0 +1,27 @@
+#!/bin/bash
+#recover platform to IncludeOS
+
+cd
+tout=0.05
+while true; do
+	t1=$(date +%s%3N) 
+        sudo timeout $tout ping 10.0.0.2 -i 0.1 -c 1 > /dev/null 2>&1; 
+        if [ "$?" = 0 ] 
+        then 
+                echo "running"
+        else
+                echo "failure"
+                echo "trigger"
+		break
+        fi
+done
+#cd commute
+#./com docker $t1
+
+cd firewall_includeos/build
+./run
+
+#t2=$(date +%s%3N)
+#read t2
+#echo $(($t2 - $t1))
+

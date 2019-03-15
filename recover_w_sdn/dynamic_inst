@@ -1,0 +1,34 @@
+#!/bin/bash
+
+echo "tap0 port number?"
+read tap0
+echo "tap1 port number?"
+read tap1
+echo "mem percentage?"
+read percent
+lim=$(echo "scale=2;$percent*7.9/100" | bc) #limite de mem para disparar trigger
+echo $lim
+
+cd
+tout=0.2
+while true; do
+
+	m=$(ps aux | grep 'initrd current_version' | grep -v grep | awk '{print $4}') #da o valor de mem dos 2 processos
+        mem=$(echo "scale=2;$(echo $m | sed 's/ /+/g')" | bc) 
+	if (( $(echo "$mem <= $lim" |bc -l) )); then
+               	echo "running safe"
+		echo $mem
+	else
+		echo "critical mem"
+		break
+	fi
+done
+
+# DYNAMIC INSTANTIATION
+#cd /home/apu1/firewall_docker/fw_stateful_img && ./run_backup & cd .
+#curl -X POST -d '{"vnf": "firewall","priority": 2,"ip0": "10.0.0.3/24","ip1": "192.168.0.2/24","mac0": "c0:01:0a:00:01:2a","interface0": '"$tap2"',"mac1": "c0:01:0a:00:01:3a","interface1": '"$tap3"',}' http://localhost:8080/recover/up
+
+sleep 5
+curl -X POST -d '{"vnf": "firewall","priority": 1,"ip0": "10.0.0.2/24","ip1": "192.168.0.3/24","mac0": "c0:01:0a:00:00:2a","interface0": '"$tap0"',"mac1": "c0:01:0a:00:00:3a","interface1": '"$tap1"',}' http://localhost:8080/recover/trigger
+sudo kill $(ps aux | grep 'initrd current_version' | grep -v grep | awk '{print $2}')
+

@@ -1,0 +1,26 @@
+#!/bin/bash
+#recover mechanism to docker platform
+
+cd
+tout=0.05
+while true; do
+	t1=$(date +%s%3N) 
+        sudo timeout $tout ping 10.0.0.2 -i 0.1 -c 1 > /dev/null 2>&1; 
+        if [ "$?" = 0 ] 
+        then 
+                echo "running"
+        else
+                echo "failure"
+                echo "trigger"
+		break
+        fi
+done
+#t2=$(date +%s%3N)
+#echo $(($t2 - $t1))
+
+cd firewall_docker/fw_stateful_img
+docker-compose --compatibility up 
+
+#read t2
+#echo $(($t2 - $t1))
+

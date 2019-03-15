@@ -1,0 +1,7 @@
+#docker exec api iperf3 -c 192.168.0.4 -p 80 -l 1400 &
+#docker exec api iperf3 -c 192.168.0.4 -p 80 -l 1400 -u -b 1g &
+
+iperf3 -c 192.168.0.4 -p 80 -u -b 1g -l 1400 -t 25 --get-server-output &
+sleep 13.5
+sudo kill $(ps aux | grep 'initrd current_version' | grep -v grep | awk '{print $2}')
+echo "main uk down"
